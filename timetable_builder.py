@@ -1,63 +1,5 @@
 from tabulate import * #for prettier tables
-
-courses_available = [
-    {
-        "code": "SAIA1113",
-        "name": "PYTHON PROGRAMMING",
-        "credit": 3,
-        "slots": [("Monday","08:00-10:00")],
-        "location": "Lecture Room 1, Lvl 15",
-    },
-    {
-        "code": "SAIA1143",
-        "name": "DISCRETE MATHEMATICS",
-        "credit": 3,
-        "slots": [("Tuesday","10:00-12:00")],
-        "location": "Lecture Room 1, Lvl 15",
-    },
-    {
-        "code": "SAIA1013",
-        "name": "RESPONSIBLE AI AND ETHICS",
-        "credit": 3,
-        "slots": [("Wednesday","14:00-16:00")],
-        "location": "Seminar Room 3, BATC",
-    },
-    {
-        "code": "SAIA1123",
-        "name": "INTRODUCTION TO AI",
-        "credit": 3,
-        "slots": [("Tuesday","08:00-10:00")],
-        "location": "Lecture Room 1, Lvl 15",
-    },
-    {
-        "code": "ULRS1032",
-        "name": "INTEGRITY AND ANTI-CORRUPTION",
-        "credit": 2,
-        "slots": [("Wednesday","10:00-12:00")],
-        "location": "Lecture Room 1, Lvl 15",
-    },
-    {
-        "code": "SAIA1133",
-        "name": "DATA MANAGEMENT",
-        "credit": 3,
-        "slots": [("Thursday","10:00-12:00")],
-        "location": "Lecture Room 1, Lvl 15",
-    },
-    {
-        "code": "SAIA1153",
-        "name": "MATHEMATICS FOR ML",
-        "credit": 3,
-        "slots": [("Friday","08:00-10:00")],
-        "location": "Lecture Room 2, Lvl 15",
-    },
-]
-
-students = [
-    {"name": "", "matric": "A1234567", "registered_courses": [], "total_credits": 0},
-    {"name": "", "matric": "", "registered_courses": [], "total_credits": 0},
-    {"name": "", "matric": "", "registered_courses": [], "total_credits": 0},
-    {"name": "", "matric": "", "registered_courses": [], "total_credits": 0}
-    ]
+import json
 
 # ==========================================
 #                  BRAD
@@ -194,9 +136,9 @@ def view_registered_courses(matric):
         print("\nNo courses registered.")
     else:
         print(f"\nRegistered Courses for {student['name']}:")
-        #print(tabulate(student["registered_courses"],headers=['code','name','credits'],tablefmt="fancy_grid"))
-        for c in student["registered_courses"]:
-            print(f"- {c['code']}: {c['name']} ({c['credit']} credits)")
+        print(tabulate(student["registered_courses"],headers="keys",tablefmt="fancy_grid"))
+        #for c in student["registered_courses"]:
+        #    print(f"- {c['code']}: {c['name']} ({c['credit']} credits)")
         print(f"Total Credits: {student['total_credits']}")
 
 
@@ -251,11 +193,26 @@ def display_timetable(timetable,student_name):
     print(tabulate(timetable, headers="keys", tablefmt="fancy_grid"))
 
 def save_and_exit():
-    print("Saving data and exiting...")
-    # Here you would implement actual saving logic (e.g., to a file)
-    print("Data saved. Goodbye!")
+    with open("students.json",'w') as sf:
+        json.dump(students,sf,indent=4)
+    with open("courses.json",'w') as cf:
+        json.dump(courses_available,cf,indent=4)
+
+def load_data():
+    global students, courses_available
+    try:
+        with open("students.json", "r") as f:
+            students = json.load(f)
+    except FileNotFoundError:
+        print("No existing student data found. Starting fresh.")
+        students = []
+
+    with open("courses.json", "r") as f:
+        courses_available = json.load(f)
+
     
 def main():
+    load_data()
     while True:
         display_menu()
         choice = input("Select an option (1-6): ").strip()
